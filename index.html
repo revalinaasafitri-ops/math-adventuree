@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Adventure</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #dff4ff, #f5e5ff);
+  text-align: center;
+  padding: 25px;
+  color: #333;
+}
+.container {
+  background: white;
+  max-width: 550px;
+  margin: 30px auto;
+  padding: 30px;
+  border-radius: 22px;
+  box-shadow: 0 5px 20px #0002;
+}
+h1 { color: #7454c8; }
+.number {
+  font-size: 90px;
+  color: #7454c8;
+  margin: 20px;
+  font-weight: bold;
+}
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 14px 22px;
+  margin: 7px;
+  font-size: 18px;
+  cursor: pointer;
+  background: #8065d8;
+  color: white;
+}
+button:hover { background: #6246b5; }
+.answers button {
+  min-width: 75px;
+  background: #54b9d5;
+  font-size: 24px;
+}
+#message { font-size: 20px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🌟 Math Adventure 🌟</h1>
+  <p>Selamat datang di petualangan angka!</p>
+  <h2>Ayo Kenali Angka 1–10</h2>
+
+  <div class="number" id="number">1</div>
+
+  <button onclick="speakNumber()">🔊 Dengarkan Angka</button>
+
+  <hr>
+  <h2>🎮 Kuis Angka</h2>
+  <p>Angka berapa yang sedang disebutkan?</p>
+  <button onclick="speakQuestion()">🔊 Dengarkan Pertanyaan</button>
+
+  <div class="answers" id="answers"></div>
+  <p id="message">Pilih jawaban yang benar!</p>
+  <p>⭐ Skor: <span id="score">0</span></p>
+  <button onclick="newQuestion()">Soal Berikutnya ➜</button>
+</div>
+
+<script>
+let current = 1;
+let answer = 1;
+let score = 0;
+
+const words = [
+  "", "satu", "dua", "tiga", "empat",
+  "lima", "enam", "tujuh", "delapan",
+  "sembilan", "sepuluh"
+];
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) {
+    alert("Browser belum mendukung suara.");
+    return;
+  }
+  speechSynthesis.cancel();
+  const voice = new SpeechSynthesisUtterance(text);
+  voice.lang = "id-ID";
+  voice.rate = 0.85;
+  speechSynthesis.speak(voice);
+}
+
+function speakNumber() {
+  speak(words[current]);
+}
+
+function speakQuestion() {
+  speak("Manakah angka " + words[answer] + "?");
+}
+
+function newQuestion() {
+  answer = Math.floor(Math.random() * 10) + 1;
+  current = answer;
+  document.getElementById("number").textContent = current;
+  document.getElementById("message").textContent =
+    "Pilih jawaban yang benar!";
+  const choices = [answer];
+
+  while (choices.length < 4) {
+    let n = Math.floor(Math.random() * 10) + 1;
+    if (!choices.includes(n)) choices.push(n);
+  }
+
+  choices.sort(() => Math.random() - 0.5);
+
+  const area = document.getElementById("answers");
+  area.innerHTML = "";
+
+  choices.forEach(n => {
+    const btn = document.createElement("button");
+    btn.textContent = n;
+    btn.onclick = () => checkAnswer(n);
+    area.appendChild(btn);
+  });
+}
+
+function checkAnswer(n) {
+  const message = document.getElementById("message");
+  if (n === answer) {
+    message.textContent = "🎉 Hebat! Jawaban kamu benar!";
+    score++;
+    document.getElementById("score").textContent = score;
+    speak("Hebat! Jawaban kamu benar!");
+  } else {
+    message.textContent = "Belum tepat. Ayo coba lagi!";
+    speak("Ayo coba lagi!");
+  }
+}
+
+newQuestion();
+</script>
+</body>
+</html>
